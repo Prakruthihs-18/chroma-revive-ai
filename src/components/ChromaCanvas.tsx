@@ -25,9 +25,14 @@ export const ChromaCanvas = ({ activeTool, activeColor, onCanvasReady }: ChromaC
       backgroundColor: "#1a1a1a",
     });
 
-    // Initialize the freeDrawingBrush
-    canvas.freeDrawingBrush.color = activeColor;
-    canvas.freeDrawingBrush.width = 3;
+    // Enable drawing mode briefly to initialize the freeDrawingBrush
+    canvas.isDrawingMode = true;
+    if (canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.color = activeColor;
+      canvas.freeDrawingBrush.width = 3;
+    }
+    // Disable drawing mode by default
+    canvas.isDrawingMode = false;
 
     setFabricCanvas(canvas);
     onCanvasReady(canvas);
@@ -50,8 +55,10 @@ export const ChromaCanvas = ({ activeTool, activeColor, onCanvasReady }: ChromaC
     switch (activeTool) {
       case "draw":
         fabricCanvas.isDrawingMode = true;
-        fabricCanvas.freeDrawingBrush.color = activeColor;
-        fabricCanvas.freeDrawingBrush.width = 3;
+        if (fabricCanvas.freeDrawingBrush) {
+          fabricCanvas.freeDrawingBrush.color = activeColor;
+          fabricCanvas.freeDrawingBrush.width = 3;
+        }
         break;
       
       case "select":
@@ -100,8 +107,10 @@ export const ChromaCanvas = ({ activeTool, activeColor, onCanvasReady }: ChromaC
       
       case "eraser":
         fabricCanvas.isDrawingMode = true;
-        fabricCanvas.freeDrawingBrush.color = "#1a1a1a"; // Canvas background color
-        fabricCanvas.freeDrawingBrush.width = 10;
+        if (fabricCanvas.freeDrawingBrush) {
+          fabricCanvas.freeDrawingBrush.color = "#1a1a1a"; // Canvas background color
+          fabricCanvas.freeDrawingBrush.width = 10;
+        }
         break;
     }
   }, [activeTool, activeColor, fabricCanvas]);
