@@ -1,5 +1,20 @@
 import { Button } from "@/components/ui/enhanced-button";
-import { Sparkles, Download, Upload, Undo, Redo, Save } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Save, 
+  Download, 
+  Upload, 
+  Undo2, 
+  Redo2,
+  Menu,
+  Palette,
+  Image as ImageIcon,
+  Video,
+  Sparkles,
+  Wand2
+} from "lucide-react";
+
+export type EditorMode = 'image' | 'video' | 'ai';
 
 interface ChromaHeaderProps {
   onUpload: () => void;
@@ -9,6 +24,8 @@ interface ChromaHeaderProps {
   canRedo: boolean;
   onUndo: () => void;
   onRedo: () => void;
+  mode: EditorMode;
+  onModeChange: (mode: EditorMode) => void;
 }
 
 export const ChromaHeader = ({
@@ -19,19 +36,57 @@ export const ChromaHeader = ({
   canRedo,
   onUndo,
   onRedo,
+  mode,
+  onModeChange,
 }: ChromaHeaderProps) => {
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-card border-b border-border">
-      {/* Logo & Brand */}
+      {/* Logo */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+        <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+          <Palette className="w-5 h-5 text-white" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
             ChromaRevive
           </h1>
+          <p className="text-xs text-muted-foreground">
+            {mode === 'image' && 'Image Editor'}
+            {mode === 'video' && 'Video Editor'} 
+            {mode === 'ai' && 'AI Studio'}
+          </p>
         </div>
+      </div>
+
+      {/* Mode Switcher */}
+      <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-lg">
+        <Button
+          variant={mode === 'image' ? 'tool-active' : 'tool'}
+          size="sm"
+          onClick={() => onModeChange('image')}
+          className="h-8 px-3"
+        >
+          <ImageIcon className="w-4 h-4 mr-1" />
+          Image
+        </Button>
+        <Button
+          variant={mode === 'video' ? 'tool-active' : 'tool'}
+          size="sm"
+          onClick={() => onModeChange('video')}
+          className="h-8 px-3"
+        >
+          <Video className="w-4 h-4 mr-1" />
+          Video
+        </Button>
+        <Button
+          variant={mode === 'ai' ? 'tool-active' : 'tool'}
+          size="sm"
+          onClick={() => onModeChange('ai')}
+          className="h-8 px-3"
+        >
+          <Sparkles className="w-4 h-4 mr-1" />
+          AI Studio
+        </Button>
       </div>
 
       {/* Main Actions */}
@@ -48,7 +103,7 @@ export const ChromaHeader = ({
             disabled={!canUndo}
             onClick={onUndo}
           >
-            <Undo className="w-4 h-4" />
+            <Undo2 className="w-4 h-4" />
           </Button>
           <Button 
             variant="tool" 
@@ -56,7 +111,7 @@ export const ChromaHeader = ({
             disabled={!canRedo}
             onClick={onRedo}
           >
-            <Redo className="w-4 h-4" />
+            <Redo2 className="w-4 h-4" />
           </Button>
         </div>
 

@@ -1,11 +1,16 @@
 import { useState, useCallback } from "react";
 import { Canvas as FabricCanvas } from "fabric";
-import { ChromaHeader } from "@/components/ChromaHeader";
+import { ChromaHeader, EditorMode } from "@/components/ChromaHeader";
 import { ToolPanel, Tool } from "@/components/ToolPanel";
 import { ChromaCanvas } from "@/components/ChromaCanvas";
+import { EffectsPanel } from "@/components/EffectsPanel";
+import { AIGenerationPanel } from "@/components/AIGenerationPanel";
+import { VideoEditor } from "@/components/VideoEditor";
+import { TransitionsPanel } from "@/components/TransitionsPanel";
 import { toast } from "sonner";
 
 const ChromaRevive = () => {
+  const [mode, setMode] = useState<EditorMode>('image');
   const [activeTool, setActiveTool] = useState<Tool>("select");
   const [activeColor, setActiveColor] = useState("#8B5CF6");
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
@@ -84,6 +89,23 @@ const ChromaRevive = () => {
     }
   }, []);
 
+  const handleModeChange = useCallback((newMode: EditorMode) => {
+    setMode(newMode);
+    toast.success(`Switched to ${newMode} editing mode`);
+  }, []);
+
+  const handleEffectApply = useCallback((effect: any) => {
+    console.log('Effect applied:', effect);
+  }, []);
+
+  const handleTransitionApply = useCallback((transition: any) => {
+    console.log('Transition applied:', transition);
+  }, []);
+
+  const handleVideoProcessed = useCallback((videoUrl: string) => {
+    console.log('Video processed:', videoUrl);
+  }, []);
+
   return (
     <div className="h-screen bg-background flex flex-col">
       {/* Header */}
@@ -95,24 +117,57 @@ const ChromaRevive = () => {
         canRedo={canRedo}
         onUndo={handleUndo}
         onRedo={handleRedo}
+        mode={mode}
+        onModeChange={handleModeChange}
       />
       
       {/* Main Content */}
       <div className="flex-1 flex">
-        {/* Tool Panel */}
-        <ToolPanel
-          activeTool={activeTool}
-          onToolChange={handleToolChange}
-          activeColor={activeColor}
-          onColorChange={setActiveColor}
-        />
+        {/* Left Panel - Tools */}
+        {mode === 'image' && (
+          <ToolPanel
+            activeTool={activeTool}
+            onToolChange={handleToolChange}
+            activeColor={activeColor}
+            onColorChange={setActiveColor}
+          />
+        )}
         
-        {/* Canvas Area */}
-        <ChromaCanvas
-          activeTool={activeTool}
-          activeColor={activeColor}
-          onCanvasReady={handleCanvasReady}
-        />
+        {/* Main Editor Area */}
+        {mode === 'image' && (
+          <ChromaCanvas
+            activeTool={activeTool}
+            activeColor={activeColor}
+            onCanvasReady={handleCanvasReady}
+          />
+        )}
+        
+        {mode === 'video' && (
+          <VideoEditor onVideoProcessed={handleVideoProcessed} />
+        )}
+        
+        {mode === 'ai' && (
+          <div className="flex-1 flex items-center justify-center bg-gradient-subtle">
+            <AIGenerationPanel fabricCanvas={fabricCanvas} />
+          </div>
+        )}
+
+        {/* Right Panel - Effects & AI */}
+        {mode === 'image' && (
+          <div className="flex">
+            <EffectsPanel
+              fabricCanvas={fabricCanvas}
+              onEffectApply={handleEffectApply}
+            />
+          </div>
+        )}
+        
+        {mode === 'video' && (
+          <TransitionsPanel
+            onTransitionApply={handleTransitionApply}
+            onEffectApply={handleEffectApply}
+          />
+        )}
       </div>
     </div>
   );
